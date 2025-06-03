@@ -1,6 +1,8 @@
 class DbManagement:
+    
     def __init__(self):
-        pass
+        print("hello world")
+        print("hello buddy")
     
     def create_table_into_database(self):
         pass
