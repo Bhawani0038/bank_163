@@ -1,7 +1,8 @@
-
+from database import DbManagement
 def main():
-    pass
+    db = DbManagement()
 
 
 if __name__ == '__main__':
     main()
+    
