@@ -1,6 +1,1 @@
-
-
-
-
-
-print(generate_account_number())
+print(9 ** 4)
