@@ -131,20 +131,83 @@ class DbManagement:
         pass
     
     def check_balance(self):
-        pass
+        self.cursor.execute(f"select balance from customer_account where acc_no = '{self.acc_no}'; ")
+        return self.cursor.fetchone()[0]
     
     def deposit(self):
-        pass
+        amount = float(input("amount:    "))
+       
+        if amount <= 0:
+            print( "Amount can be 0 or negative  ")
+            
+        elif amount > 2_50_000:
+            print("Amount is Too high to deposit at once")
+        
+        else:
+            self.cursor.execute(f"""
+                                UPDATE `bankdb`.`customer_account` 
+                                SET 
+                                    `balance` = `balance` + {amount}
+                                WHERE
+                                    `acc_no` = '{self.acc_no}';""")
+            
+            self.connection.commit()  
+            print(f"Rs {amount} Deposited succesfully. New balance = ",self.check_balance())
+           
     
     def withdraw_balance(self):
-        pass
+        amount = float(input("amount:    "))
+       
+        if amount <= 0:
+            print( "Amount can be 0 or negative  ")
+        
+            
+        elif amount >= self.check_balance():
+            print("insufficent balance in your account")
+        
+        else:
+            self.cursor.execute(f"""
+                                UPDATE `bankdb`.`customer_account` 
+                                SET 
+                                    `balance` = `balance` - {amount}
+                                WHERE
+                                    `acc_no` = '{self.acc_no}';""")
+            
+            self.connection.commit()  
+            print(f"Rs {amount} withdrawn succesfully. New balance = ",self.check_balance())
+           
+               
     
     def transfer_money(self):
         pass    
-    
+        
     def change_password(self):
-        pass
+        password = self.check_password_strength()
+        self.cursor.execute(f"""
+                                UPDATE `bankdb`.`customer_account` 
+                                SET 
+                                    `password` = '{password}'
+                                WHERE
+                                    `acc_no` = '{self.acc_no}';""")
+        
+        self.connection.commit()
+        print("passeword set to", password)
+        
+
+    def change_pin(self):
+        print("we opened the portal to change your pin")
+        pin = self.verify_pin()
+        self.cursor.execute(f"""
+                                UPDATE `bankdb`.`customer_account` 
+                                SET 
+                                    `pin` = '{pin}'
+                                WHERE
+                                    `acc_no` = '{self.acc_no}';""")
+        
+        self.connection.commit()
+        print("pin set to", pin)
     
+        
     def customer_process_window(self):
         while True:
             choice = input("""
@@ -153,7 +216,8 @@ class DbManagement:
                         3: Deposit
                         4: Transfer money
                         5: Change Password
-                        6: Exit
+                        6: Change Pin
+                        7: Exit
                         
                         """)
 
@@ -161,7 +225,7 @@ class DbManagement:
                 self.withdraw_balance()
                 
             elif choice == "2":
-                self.check_balance()
+                print("current balance=", self.check_balance())
                 
             elif choice == "3":
                 self.deposit()
@@ -173,5 +237,8 @@ class DbManagement:
                 self.change_password()
                 
             elif choice == "6":
+                self.change_pin()
+                
+            elif choice == "7":
                 print("exitting the app.........")
                 exit()
